@@ -30,6 +30,7 @@ namespace redis_set
             db.HashSet("edsonlp", g5, DateTime.Now.AddDays(-10).ToString());
 
             await PodeLogar(db, g6);
+            //se veio true, pode gerar token
 
             //nao vai atualizar pq chave nao existe. 
             var tran3 = db.CreateTransaction();
