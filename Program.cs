@@ -7,6 +7,8 @@ namespace redis_set
 {
     class Program
     {
+       
+
         static async Task Main(string[] args)
         {
             ConnectionMultiplexer redis = ConnectionMultiplexer.Connect("localhost");
@@ -52,36 +54,33 @@ namespace redis_set
 
             var podeLogar = false;
 
-            if ((await db.HashLengthAsync("edsonlp")) < 5)
-            {
-                 await db.HashSetAsync("edsonlp", g6, DateTime.Now.AddDays(10).ToString());
-            }
-            else
-            {
+            var tran4 = db.CreateTransaction();
+            tran4.AddCondition(Condition.HashLengthLessThan("edsonlp", 5));
+            tran4.HashSetAsync("edsonlp", g6, DateTime.Now.AddYears(1).ToString());
+            bool committed2 = tran4.Execute();
+
+            podeLogar = committed2;
+
+            if (podeLogar == false)
+            {    
                 var logins = (await db.HashGetAllAsync("edsonlp")).Select(x => new Login
                 {
                     JwtID = x.Name,
                     UltimoAcesso = Convert.ToDateTime(x.Value)
-                });
+                }).ToList();
 
                 var loginExpirado = logins.FirstOrDefault(x => x.UltimoAcesso.AddMinutes(5).CompareTo(DateTime.Now) < 0);
 
                 if (loginExpirado != null)
-                {
+                {                    
                     var tran = db.CreateTransaction();
-
-                     tran.HashDeleteAsync("edsonlp", loginExpirado.JwtID);
-                     //tbm tem q invalidar o token
-                     tran.HashSetAsync("edsonlp", g6, DateTime.Now.AddDays(10).ToString());
-
+                    tran.HashDeleteAsync("edsonlp", loginExpirado.JwtID);
+                    tran.HashSetAsync("edsonlp", g6, DateTime.Now.AddYears(1).ToString());
                     bool committed = tran.Execute();
 
-                    podeLogar = true;
+                    podeLogar = committed;
                 }
-
             }
-
-
 
             return podeLogar;
         }
@@ -99,3 +98,4 @@ namespace redis_set
         }
     }
 }
+
