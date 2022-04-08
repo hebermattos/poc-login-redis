@@ -64,11 +64,13 @@ namespace redis_set
 
             if (podeLogar == false)
             {    
-                var loginExpirado = (await db.HashGetAllAsync("edsonlp")).Select(x => new Login
-                {
-                    JwtID = x.Name,
-                    UltimoAcesso = Convert.ToDateTime(x.Value)
-                }).FirstOrDefault(x => x.UltimoAcesso.AddMinutes(5).CompareTo(DateTime.Now) < 0);
+                var loginExpirado = (await db.HashGetAllAsync("edsonlp"))
+                                                .Select(x => new Login
+                                                {
+                                                    JwtID = x.Name,
+                                                    UltimoAcesso = Convert.ToDateTime(x.Value)
+                                                })
+                                                .FirstOrDefault(x => x.UltimoAcesso.AddMinutes(5).CompareTo(DateTime.Now) < 0);
 
                 if (loginExpirado != null)
                 {      
