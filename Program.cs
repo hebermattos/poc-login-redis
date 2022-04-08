@@ -6,9 +6,7 @@ using StackExchange.Redis;
 namespace redis_set
 {
     class Program
-    {
-       
-
+    {     
         static async Task Main(string[] args)
         {
             ConnectionMultiplexer redis = ConnectionMultiplexer.Connect("localhost");
@@ -53,8 +51,7 @@ namespace redis_set
         }
 
         private static async Task<bool> PodeLogar(IDatabase db, string g6)
-        {     
-
+        {   
             var podeLogar = false;
 
             var tran4 = db.CreateTransaction();
@@ -100,4 +97,3 @@ namespace redis_set
         }
     }
 }
-
