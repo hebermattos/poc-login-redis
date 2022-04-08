@@ -74,6 +74,7 @@ namespace redis_set
                 if (loginExpirado != null)
                 {                    
                     var tran = db.CreateTransaction();
+                    tran.AddCondition(Condition.HashExists("edsonlp", loginExpirado.JwtID));
                     tran.HashDeleteAsync("edsonlp", loginExpirado.JwtID);
                     tran.HashSetAsync("edsonlp", g6, DateTime.Now.AddYears(1).ToString());
                     bool committed = tran.Execute();
