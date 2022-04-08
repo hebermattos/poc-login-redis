@@ -54,6 +54,7 @@ namespace redis_set
         {   
             var podeLogar = false;
 
+            //cria a chave se tem menos que 5
             var tran4 = db.CreateTransaction();
             tran4.AddCondition(Condition.HashLengthLessThan("edsonlp", 5));
             tran4.HashSetAsync("edsonlp", g6, DateTime.Now.AddYears(1).ToString());
@@ -70,7 +71,8 @@ namespace redis_set
                 }).FirstOrDefault(x => x.UltimoAcesso.AddMinutes(5).CompareTo(DateTime.Now) < 0);
 
                 if (loginExpirado != null)
-                {                    
+                {      
+                    //se a chave expirada jah foi deletada, nao insere, pois jah deve ter 5 de novo              
                     var tran = db.CreateTransaction();
                     tran.AddCondition(Condition.HashExists("edsonlp", loginExpirado.JwtID));
                     tran.HashDeleteAsync("edsonlp", loginExpirado.JwtID);
